@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smartphone Hub</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    body[data-theme="dark"] {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    .dark-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1000;
+    }
+    .product-card img {
+      height: 200px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="dark-toggle">
+    <button class="btn btn-secondary" onclick="toggleTheme()">Toggle Theme</button>
+  </div>
+
+  <div class="container py-5">
+    <h1 class="text-center mb-4">Smartphone Hub</h1>
+
+    <!-- Products Section -->
+    <section id="products">
+      <h2>Products</h2>
+      <div class="row" id="product-list"></div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="mt-5">
+      <h2>Gallery</h2>
+      <div class="row" id="gallery-list"></div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="mt-5">
+      <h2>Blog</h2>
+      <div class="list-group" id="blog-list"></div>
+    </section>
+
+    <!-- Contact Form -->
+    <section id="contact" class="mt-5">
+      <h2>Contact Us</h2>
+      <form action="https://formspree.io/f/mayvlqlq" method="POST">
+        <div class="mb-3">
+          <input type="text" class="form-control" name="name" placeholder="Your Name" required />
+        </div>
+        <div class="mb-3">
+          <input type="email" class="form-control" name="email" placeholder="Your Email" required />
+        </div>
+        <div class="mb-3">
+          <textarea class="form-control" name="message" placeholder="Your Message" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send Message</button>
+      </form>
+    </section>
+
+    <!-- Cart Section -->
+    <section id="cart" class="mt-5">
+      <h2>Cart</h2>
+      <ul class="list-group" id="cart-items"></ul>
+      <div class="mt-3">
+        <strong>Total: $<span id="cart-total">0.00</span></strong>
+      </div>
+      <button class="btn btn-success mt-2" onclick="checkout()">Checkout</button>
+    </section>
+  </div>
+
+  <script>
+    const products = [
+      { id: 1, name: "iPhone 14 Pro", price: 999, img: "https://via.placeholder.com/300x200?text=iPhone+14+Pro" },
+      { id: 2, name: "Samsung Galaxy S23", price: 899, img: "https://via.placeholder.com/300x200?text=Galaxy+S23" },
+      { id: 3, name: "AirPods Pro", price: 249, img: "https://via.placeholder.com/300x200?text=AirPods+Pro" },
+    ];
+
+    const productList = document.getElementById("product-list");
+    const cartItems = document.getElementById("cart-items");
+    const cartTotal = document.getElementById("cart-total");
+    let cart = [];
+
+    function renderProducts() {
+      products.forEach(p => {
+        const col = document.createElement("div");
+        col.className = "col-md-4 mb-3";
+        col.innerHTML = `
+          <div class="card product-card">
+            <img src="${p.img}" class="card-img-top" alt="${p.name}">
+            <div class="card-body">
+              <h5 class="card-title">${p.name}</h5>
+              <p class="card-text">$${p.price}</p>
+              <button class="btn btn-primary" onclick="addToCart(${p.id})">Add to Cart</button>
+            </div>
+          </div>`;
+        productList.appendChild(col);
+      });
+    }
+
+    function addToCart(id) {
+      const product = products.find(p => p.id === id);
+      cart.push(product);
+      updateCart();
+    }
+
+    function updateCart() {
+      cartItems.innerHTML = "";
+      let total = 0;
+      cart.forEach((item, i) => {
+        total += item.price;
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.textContent = `${item.name} - $${item.price}`;
+        const btn = document.createElement("button");
+        btn.className = "btn btn-sm btn-danger";
+        btn.textContent = "Remove";
+        btn.onclick = () => {
+          cart.splice(i, 1);
+          updateCart();
+        };
+        li.appendChild(btn);
+        cartItems.appendChild(li);
+      });
+      cartTotal.textContent = total.toFixed(2);
+    }
+
+    function checkout() {
+      alert("This is a test checkout button. Replace with Stripe or PayPal.");
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const currentTheme = body.getAttribute("data-theme");
+      body.setAttribute("data-theme", currentTheme === "light" ? "dark" : "light");
+    }
+
+    // Dummy content for gallery and blog
+    document.getElementById("gallery-list").innerHTML = `
+      <div class="col-md-4"><img src="https://via.placeholder.com/300x200" class="img-fluid rounded" /></div>
+      <div class="col-md-4"><img src="https://via.placeholder.com/300x200" class="img-fluid rounded" /></div>
+      <div class="col-md-4"><img src="https://via.placeholder.com/300x200" class="img-fluid rounded" /></div>
+    `;
+
+    document.getElementById("blog-list").innerHTML = `
+      <a href="#" class="list-group-item list-group-item-action">Latest iPhones Reviewed</a>
+      <a href="#" class="list-group-item list-group-item-action">Top Android Picks 2025</a>
+      <a href="#" class="list-group-item list-group-item-action">Best Accessories You Need</a>
+    `;
+
+    renderProducts();
+  </script>
+</body>
+</html>
